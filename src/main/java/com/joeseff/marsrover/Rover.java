@@ -17,6 +17,9 @@ package com.joeseff.marsrover;
 // left - right, will be movement on the x axis
 // left y is negative, right y is positive
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Rover {
 
     // Circle
@@ -24,10 +27,19 @@ public class Rover {
     private int centerY = 0;
     private int radius = 7;
     private Location currentLocation;
-
+    private List<Point> obstacles;
 
     public Rover() {
         currentLocation = new Location();
+        obstacles = new ArrayList<>();
+    }
+
+    public List<Point> getObstacles() {
+        return obstacles;
+    }
+
+    public void setObstacles(List<Point> obstacles) {
+        this.obstacles = obstacles;
     }
 
     public Location forwards(int steps) {
@@ -131,22 +143,34 @@ public class Rover {
         }
 
         // Get the cardinal point
-        if ( xPoint == 0 && yPoint > 0 ) {
-            cardinalPoint = "N";
-        } else if ( xPoint > 0 && yPoint > 0 ) {
-            cardinalPoint = "NE";
-        } else if ( xPoint < 0 && yPoint > 0 ) {
-            cardinalPoint = "NW";
-        } else if ( xPoint == 0 && yPoint < 0 ) {
-            cardinalPoint = "S";
-        } else if ( xPoint < 0 && yPoint < 0 ) {
-            cardinalPoint = "SW";
-        } else if ( xPoint < 0 && yPoint == 0 ) {
-            cardinalPoint = "W";
-        } else if ( xPoint > 0 && yPoint < 0 ) {
-            cardinalPoint = "SE";
-        } else if ( xPoint > 0 && yPoint == 0 ) {
-            cardinalPoint = "E";
+        cardinalPoint = getCardinalPoint(xPoint, yPoint);
+
+        // Check for obstacles
+        Point newPointLocation = new Point(xPoint, yPoint);
+        if ( obstacles.size() > 0 ) {
+            for ( Point point : obstacles ) {
+                if ( point.toString().equals(newPointLocation.toString()) ) {
+
+                    // Move up to last possible point and then report obstacle
+                    if ( xPoint > 0 ) {
+                        xPoint -= 1;
+                    } else {
+                        xPoint += 1;
+                    }
+
+                    if ( yPoint > 0 ) {
+                        yPoint -= 1;
+                    } else {
+                        yPoint += 1;
+                    }
+
+                    // Report
+                    System.out.println("Obstacle detected at Point(" + xPoint + ", " + yPoint + ")! ");
+                    cardinalPoint = getCardinalPoint(xPoint, yPoint);
+                    currentLocation = new Location(xPoint, yPoint, cardinalPoint);
+                    return currentLocation;
+                }
+            }
         }
 
         // Set new location
@@ -194,6 +218,30 @@ public class Rover {
         }
 
         return new Point(px, py);
+    }
+
+    private String getCardinalPoint(int xPoint, int yPoint) {
+        String cardinalPoint = "N";
+
+        // Get the cardinal point
+        if ( xPoint == 0 && yPoint > 0 ) {
+            cardinalPoint = "N";
+        } else if ( xPoint > 0 && yPoint > 0 ) {
+            cardinalPoint = "NE";
+        } else if ( xPoint < 0 && yPoint > 0 ) {
+            cardinalPoint = "NW";
+        } else if ( xPoint == 0 && yPoint < 0 ) {
+            cardinalPoint = "S";
+        } else if ( xPoint < 0 && yPoint < 0 ) {
+            cardinalPoint = "SW";
+        } else if ( xPoint < 0 && yPoint == 0 ) {
+            cardinalPoint = "W";
+        } else if ( xPoint > 0 && yPoint < 0 ) {
+            cardinalPoint = "SE";
+        } else if ( xPoint > 0 && yPoint == 0 ) {
+            cardinalPoint = "E";
+        }
+        return cardinalPoint;
     }
 
 }
@@ -274,6 +322,11 @@ class Point {
 
     public void setCy(int cy) {
         this.cy = cy;
+    }
+
+    @Override
+    public String toString() {
+        return cx + ":" + cy;
     }
 }
 

@@ -2,6 +2,9 @@ package com.joeseff.marsrover;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 public class RoverTest {
@@ -98,5 +101,20 @@ public class RoverTest {
         currentLocation = rover.forwards(5);
         expectedValue = "-2:-5:SW";
         assertEquals(expectedValue, currentLocation.toString());
+    }
+
+    @Test
+    public void testObstacleDetection() {
+        rover = new Rover();
+        List<Point> obstaclesList = new ArrayList<>();
+        obstaclesList.add(new Point(3, 3));
+        rover.setObstacles(obstaclesList);
+
+        Location currentLocation = rover.right(3);
+        currentLocation = rover.forwards(3);
+        String expectedValue = "2:2:NE";
+        assertEquals(expectedValue, currentLocation.toString());
+
+
     }
 }
