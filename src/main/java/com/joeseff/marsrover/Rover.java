@@ -128,25 +128,25 @@ public class Rover {
             xPoint = xPoint * -1;
             yPoint = yPoint * -1;
 
-            // Get the cardinal point
-            if ( xPoint == 0 && yPoint > 0 ) {
-                cardinalPoint = "N";
-            } else if ( xPoint > 0 && yPoint > 0 ) {
-                cardinalPoint = "NE";
-            } else if ( xPoint < 0 && yPoint > 0 ) {
-                cardinalPoint = "NW";
-            } else if ( xPoint == 0 && yPoint < 0 ) {
-                cardinalPoint = "S";
-            } else if ( xPoint < 0 && yPoint < 0 ) {
-                cardinalPoint = "SW";
-            } else if ( xPoint < 0 && yPoint == 0 ) {
-                cardinalPoint = "W";
-            } else if ( xPoint > 0 && yPoint < 0 ) {
-                cardinalPoint = "SE";
-            } else if ( xPoint > 0 && yPoint == 0 ) {
-                cardinalPoint = "E";
-            }
+        }
 
+        // Get the cardinal point
+        if ( xPoint == 0 && yPoint > 0 ) {
+            cardinalPoint = "N";
+        } else if ( xPoint > 0 && yPoint > 0 ) {
+            cardinalPoint = "NE";
+        } else if ( xPoint < 0 && yPoint > 0 ) {
+            cardinalPoint = "NW";
+        } else if ( xPoint == 0 && yPoint < 0 ) {
+            cardinalPoint = "S";
+        } else if ( xPoint < 0 && yPoint < 0 ) {
+            cardinalPoint = "SW";
+        } else if ( xPoint < 0 && yPoint == 0 ) {
+            cardinalPoint = "W";
+        } else if ( xPoint > 0 && yPoint < 0 ) {
+            cardinalPoint = "SE";
+        } else if ( xPoint > 0 && yPoint == 0 ) {
+            cardinalPoint = "E";
         }
 
         // Set new location
@@ -171,13 +171,28 @@ public class Rover {
     private int getAngle(int x, int y) {
         int deltaX = Math.abs(x) - centerX;
         int deltaY = Math.abs(y) - centerY;
-        return (int) Math.atan2(deltaY, deltaX);
+
+        double radians = Math.atan2(deltaY, deltaX);
+        int angle = (int) ( radians * ( 180/Math.PI ) );
+        return angle;
     }
 
     private Point getPointOnCircumference(int x, int y) {
         int angle = getAngle(x, y);
-        int px = centerX + radius * (int) Math.cos(angle);
-        int py = centerY + radius * (int) Math.sin(angle);
+        int px = (int)(centerX + radius * Math.cos(angle));
+        int py = (int)(centerY + radius * Math.sin(angle));
+
+        // prevent an infinite loop
+        if ( px == 0 ) {
+            py = py - 2;
+            px = px + 2;
+        }
+
+        if ( py == 0 ) {
+            px = px - 2;
+            py = py + 2;
+        }
+
         return new Point(px, py);
     }
 
